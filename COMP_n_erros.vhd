@@ -11,7 +11,7 @@ architecture arc_COMP of COMP_n_erros is
 begin
 
 -- cada bit de "diferente" vira '1' quando CODE_aux(i) /= USER(i)
-diferente <= CODE_aux xor USER;
+erros <= CODE_aux xor USER;
 
 
 end arc_COMP;
