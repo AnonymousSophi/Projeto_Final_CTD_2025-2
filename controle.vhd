@@ -20,7 +20,7 @@ begin
     P1: process(clock, reset)
         begin
          if reset= '0' then
-            EA <= E0;
+            EA <= Init;
          elsif clock'event and clock= '0' then
             EA <= PE;
          end if;
@@ -37,46 +37,46 @@ begin
              
          when Setup =>
             if enter = '1' then
-                prox_estado <= Play_FPGA;
+                PE <= Play_FPGA;
             end if;
             E1 <= '1';  -- escreve nível
 
          when Play_FPGA =>
             if enter = '1' then
-                prox_estado <= Play_user;
+                PE <= Play_user;
             end if;
             E2 <= '1';  -- registra tempo FPGA
             
          when Play_user =>
             if end_time = '1' then
-                prox_estado <= Result;
+                PE <= Result;
             elsif enter = '1' then
-                prox_estado <= Next_round;
+                PE <= Next_round;
             end if;
             E2 <= '1';  -- ativa tempo
 
          when Next_round =>
-            prox_estado <= Check;
+            PE <= Check;
             E4 <= '1';  -- incrementa rodada
 
          when Check =>
             if end_game = '1' or end_round = '1' then
-                prox_estado <= Result;
+                PE <= Result;
             else
-                prox_estado <= Espera;
+                PE <= Espera;
             end if;
             E3 <= '1';  -- compara
             E5 <= '1';  -- penaliza
 
          when Espera =>
             if enter = '1' then
-                prox_estado <= Play_FPGA;
+                PE <= Play_FPGA;
             end if;
             E6 <= '1';  -- mostra estimativa
 
          when Result =>
             if enter = '1' then
-                prox_estado <= Init;
+                PE <= Init;
             end if;
             E6 <= '1';  -- mostra ponto
          end case;
