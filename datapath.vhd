@@ -44,7 +44,7 @@ signal E23, E25, E12: std_logic;
 --signals implícitos--
 
 --dec termometrico
-signal stermoround, stermobonus, andtermo: std_logic_vector(15 downto 0);
+signal stermoround, stermobonus, andtermo, smuxled: std_logic_vector(15 downto 0);
 --decoders HEX 7-0
 signal sdecod7, sdec7, sdecod6, sdec6, sdecod5, sdecod4, sdec4, sdecod3, sdecod2, sdec2, sdecod1, sdecod0, sdec0: std_logic_vector(6 downto 0);
 signal smuxhex7, smuxhex6, smuxhex5, smuxhex4, smuxhex3, smuxhex2, smuxhex1, smuxhex0: std_logic_vector(6 downto 0);
@@ -315,20 +315,21 @@ MUX_HEX1: mux_2x1_7bits port map();
 MUX_HEX0: mux_2x1_7bits port map();
 
 --mux_2x1_16bits
-MUX_LEDR: mux_2x1_16bits port map();
+andtermo <= stermoround and not(E1);
+MUX_LEDR: mux_2x1_16bits port map(stermobonus, andtermo, SW(17), smuxled);
 
 --mux_4x1_1bit
-MUX_FSM_CLK: mux_4x1_1bit port map(CLK_1Hz, CLK_050Hz, CLK_033Hz, CLK_025Hz, CLK_020Hz, end_FPGA);
+MUX_FSM_CLK: mux_4x1_1bit port map(CLK_050Hz, CLK_033Hz, CLK_025Hz, CLK_020Hz, SEL(1 downto 0), end_FPGA);
 
 --mux_4x1_15bits
-MUX_ROMaux: mux_4x1_15bits port map();
+MUX_ROMaux: mux_4x1_15bits port map(SEL(3 downto 2), srom0a, srom1a, srom2a, srom3a, CODE);
 
 --mux_4x1_32bits
-MUX_ROM: mux_4x1_32bits port map();
+MUX_ROM: mux_4x1_32bits port map(SEL(3 downto 2), srom0, srom1, srom2, srom3, CODE_aux);
 
 --reg_4bits
-REG_BONUS: reg_4bits port map(CLK_050Hz, R2, E4);
-REG_SEL: reg_4bits port map(CLK_050Hz, R2);
+REG_BONUS: reg_4bits port map(CLK_050Hz, R2, E4, Bonus, Bonus_reg);
+REG_SEL: reg_4bits port map(CLK_050Hz, R2, E1, SW(3 downto 0), SEL);
 
 --reg_15bits
 REG_USER: reg_15bits port map(CLK_050Hz, R2, E3, USER);
@@ -343,7 +344,7 @@ COMP_END: COMP_0 port map(Bonus_reg, end_game);
 SUB0: subtracao port map(Bonus_reg, erro);
 
 --logica_comb
-LOGICA0:
+LOGICA0: logica_comb port map(X, Bonus_reg, SEL(1 downto 0), RESULT);
 
 --ROM0
 ROM_0: ROM0 port map(X, srom0);
