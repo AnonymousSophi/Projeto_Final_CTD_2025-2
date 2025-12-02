@@ -4,14 +4,14 @@ use ieee.std_logic_1164.all;
 entity controle is 
 port(clock: in std_logic;
      reset, enter: in std_logic;
-     end_time, end_round, end_game: in std_logic; -- status
-     R1, E1, E2, E3, E4, E5, E6: out std_logic -- sinais controle datapath
+     end_time, end_round, end_game, end_FPGA: in std_logic; -- status
+     R1, R2, E1, E2, E3, E4, E5: out std_logic -- sinais controle datapath
      );
 end controle;
 
 architecture bhv of controle is
 
-type STATES is (Init, Setup, Play_FPGA, Play_user, Next_round, Check, Espera, Result);
+type STATES is (Init, Setup, Play_FPGA, Play_user, Count_round, Check, Espera, Result);
 signal EA, PE: STATES;
 
 begin
@@ -32,47 +32,54 @@ begin
          case EA is
          
          when Init =>
-             R1 <= '1' ;
-             PE <= Setup;
+            if enter = '1' then
+                PE <= Setup;
+            else
+                PE <= Init;
+            end if;
+            R1 <= '1';  -- Reset contadores
              
          when Setup =>
             if enter = '1' then
                 PE <= Play_FPGA;
             end if;
-            E1 <= '1';  -- escreve nível
+            R2 <= '1';  -- Config. inicial
 
          when Play_FPGA =>
-            if enter = '1' then
+            if end_FPGA = '1' then
                 PE <= Play_user;
             end if;
-            E2 <= '1';  -- registra tempo FPGA
+            E1 <= '1';  -- registra tempo FPGA
             
          when Play_user =>
             if end_time = '1' then
                 PE <= Result;
             elsif enter = '1' then
-                PE <= Next_round;
+                PE <= Count_round;
+            else
+                PE <= Play_user;
             end if;
-            E2 <= '1';  -- ativa tempo
+            E1 <= '1';  -- ativa counter_time
 
-         when Next_round =>
+         when Count_round =>
             PE <= Check;
-            E4 <= '1';  -- incrementa rodada
+            E2 <= '1';  -- incrementa rodada
 
          when Check =>
-            if end_game = '1' or end_round = '1' then
+            if end_game = '1' then      -- Máx erros
                 PE <= Result;
-            else
-                PE <= Espera;
+            elsif end_round = '1' then  -- Máx rodadas
+                PE <= Result
+            elsif
+                PE <= Espera;           -- Próx rodada
             end if;
-            E3 <= '1';  -- compara
-            E5 <= '1';  -- penaliza
+            E4 <= '1';  -- Verifica condições 
 
          when Espera =>
             if enter = '1' then
                 PE <= Play_FPGA;
             end if;
-            E6 <= '1';  -- mostra estimativa
+            E5 <= '1';  -- mostra estimativa
 
          when Result =>
             if enter = '1' then
