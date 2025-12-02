@@ -160,11 +160,10 @@ port(CLK, RST, enable: in std_logic;
 end component;
 
 component reg_15bits is 
-port(CLK:   in  std_logic;
-	  RST:   in  std_logic;
-	  N:   in  std_logic_vector(14 downto 0); -- D
-      S: out std_logic_vector(14 downto 0)    -- Q
-      ); 
+port(CLK, RST, enable: in std_logic;
+	D: in std_logic_vector(14 downto 0);
+	Q: out std_logic_vector(14 downto 0)
+    );
 end component;
 
 component ROM0 is
