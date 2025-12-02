@@ -23,7 +23,7 @@ end entity;
 architecture arc of datapath is
 ---------------------------SIGNALS-----------------------------------------------------------
 --contadores
-signal tempo, X: std_logic_vector(3 downto 0);
+signal TEMPO, X, LOAD: std_logic_vector(3 downto 0);
 --FSM_clock
 signal CLK_1Hz, CLK_050Hz, CLK_033Hz, CLK_025Hz, CLK_020Hz: std_logic;
 --Logica combinacional
@@ -153,11 +153,10 @@ end component;
 -------------------ELEMENTOS DE MEMORIA-------------------------
 
 component reg_4bits is 
-port(CLK:   in  std_logic;
-	  RST:   in  std_logic;
-	  N:   in  std_logic_vector(3 downto 0); -- D
-      S: out std_logic_vector(3 downto 0)    -- Q
-      ); 
+port(CLK, RST, enable: in std_logic;
+    D: in std_logic_vector(3 downto 0);
+    Q: out std_logic_vector(3 downto 0)
+    );
 end component;
 
 component reg_15bits is 
@@ -283,10 +282,11 @@ freq_emu: FSM_clock_emu port map(R1, E2orE3, clk, CLK_1Hz, CLK_050Hz, CLK_033Hz,
 CT0: counter_time port map(R1, E3, CLK_1Hz, LOAD, end_time, TEMPO);
 
 --counter_round
-CTR0: counter_round port map ();
+CTR0: counter_round port map (E4, R2, CLK_050Hz, X, end_round);
 
 --decoder_termometrico
-DEC0: 
+DECX: decoder_termometrico port map(Bonus_reg, stermobonus);
+DECBONUS: decoder_termometrico port map(X, stermoround);
 
 --decod7seg
 DEC_HEX7: decod7seg port map();
@@ -296,67 +296,79 @@ DEC_HEX2: decod7seg port map();
 DEC_HEX0: decod7seg port map();
 
 --d_code
-
+DCODE_HEX7: d_code port map();
+DCODE_HEX6: d_code port map();
+DCODE_HEX5: d_code port map();
+DCODE_HEX4: d_code port map();
+DCODE_HEX3: d_code port map();
+DCODE_HEX2: d_code port map();
+DCODE_HEX1: d_code port map();
+DCODE_HEX0: d_code port map();
 
 --mux_2x1_7bits
-
+MUX_HEX7: mux_2x1_7bits port map();
+MUX_HEX6: mux_2x1_7bits port map();
+MUX_HEX5: mux_2x1_7bits port map();
+MUX_HEX4: mux_2x1_7bits port map();
+MUX_HEX3: mux_2x1_7bits port map();
+MUX_HEX2: mux_2x1_7bits port map();
+MUX_HEX1: mux_2x1_7bits port map();
+MUX_HEX0: mux_2x1_7bits port map();
 
 --mux_2x1_16bits
-
+MUX_LEDR: mux_2x1_16bits port map();
 
 --mux_4x1_1bit
-
+MUX_FSM_CLK: mux_4x1_1bit port map(CLK_1Hz, CLK_050Hz, CLK_033Hz, CLK_025Hz, CLK_020Hz, end_FPGA);
 
 --mux_4x1_15bits
-
+MUX_ROMaux: mux_4x1_15bits port map();
 
 --mux_4x1_32bits
-
+MUX_ROM: mux_4x1_32bits port map();
 
 --reg_4bits
-
+REG_BONUS: reg_4bits port map(CLK_050Hz, R2, E4);
+REG_SEL: reg_4bits port map(CLK_050Hz, R2);
 
 --reg_15bits
-
+REG_USER: reg_15bits port map(CLK_050Hz, R2, E3, USER);
 
 --COMP_n_erros
-
+COMP_ERRO: COMP_n_erros port map(CODE_aux, USER, erro);
 
 --COMP_0
-
+COMP_END: COMP_0 port map(Bonus_reg, end_game);
 
 --subtracao
-
+SUB0: subtracao port map(Bonus_reg, erro);
 
 --logica_comb
-
+LOGICA0:
 
 --ROM0
-
-
+ROM_0: ROM0 port map(X, srom0);
 
 --ROM0a
-
+ROM_0a: ROM0a port map(X, srom0a);
 
 --ROM1
-
+ROM_1: ROM1 port map(X, srom1);
 
 --ROM1a
-
+ROM_1a: ROM1a port map(X, srom1a);
 
 --ROM2
+ROM_2: ROM2 port map(X, srom2);
 
 --ROM2a
-
+ROM_2a: ROM2a port map(X, srom2a);
 
 --ROM3
-
+ROM_3:vROM3 port map(X, srom3);
 
 --ROM3a
-
-
--- o aluno deve interligar todas as componentes seguindo o modelo do datapath dado
-
+ROM_3a: ROM3a port map(X, srom3a);
 
 
 end arc;
