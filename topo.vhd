@@ -49,6 +49,10 @@ begin
 
 clock <= CLK_500Hz; -- 500 Hz clock
 
+--Para o contrle
+reset <= KEY(0);
+enter <= KEY(1);
+
 -- PORT MAPS
 
 DATA0: datapath port map(clock, SW(17 downto 0), R1, R2, E1, E2, E3, E4, E5, HEX0, HEX1, HEX2, HEX3, HEX4, HEX5, HEX6, HEX7, 
@@ -57,7 +61,7 @@ DATA0: datapath port map(clock, SW(17 downto 0), R1, R2, E1, E2, E3, E4, E5, HEX
                         
 BT0: ButtonSync port map(KEY(1), KEY(0), clock, enter, reset);
 
-CTRL0: controle port map(clock, KEY(0), KEY(1), end_time, end_round, end_game, end_FPGA, R1, R2, E1, E2, E3, E4, E5);
+CTRL0: controle port map(clock, reset, enter, end_time, end_round, end_game, end_FPGA, R1, R2, E1, E2, E3, E4, E5);
 
 
 end circuito;
