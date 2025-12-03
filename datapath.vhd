@@ -117,10 +117,9 @@ end component;
 ---------------------MULTIPLEXADORES----------------------------
 
 component mux_2x1_7bits is
-port(sel: in std_logic;                    -- sel
-	x, y: in std_logic_vector(6 downto 0); -- E0, E1
-	saida: out std_logic_vector(6 downto 0)-- saida
-);
+port(E0, E1: in std_logic_vector(6 downto 0);
+	sel: in std_logic;
+	saida: out std_logic_vector(6 downto 0));
 end component;
 
 component mux_2x1_16bits is
@@ -406,6 +405,5 @@ HEX1 <= E12 or smuxhex1;
 HEX0 <= E12 or smuxhex0;
 
 end arc;
-
 
 
