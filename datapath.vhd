@@ -47,7 +47,7 @@ signal T_display, L_display, C_display: std_logic_vector(7 downto 0);
 --dec termometrico
 signal stermoround, stermobonus, andtermo, smuxled: std_logic_vector(15 downto 0);
 --decoders HEX 7-0
-signal sdecod7, sdec7, sdecod6, sdec6, sdecod5, sdecod4, sdec4, sdecod3, sdecod2, sdec2, sdecod1, sdecod0, sdec0: std_logic_vector(6 downto 0);
+signal sdecod7, sdec7, sdecod6, sdec6, sdecod5, sdec5, sdecod4, sdec4, sdecod3, sdec3, sdecod2, sdec2, sdecod1, sdec1, sdecod0, sdec0: std_logic_vector(6 downto 0);
 signal smuxhex7, smuxhex6, smuxhex5, smuxhex4, smuxhex3, smuxhex2, smuxhex1, smuxhex0: std_logic_vector(6 downto 0);
 signal edec2, edec0: std_logic_vector(3 downto 0);
 --saida ROMs
@@ -292,8 +292,8 @@ DECBONUS: decoder_termometrico port map(X, stermoround);
 DEC_HEX7: decod7seg port map(RESULT(7 downto 4), sdecod7);
 DEC_HEX6: decod7seg port map(RESULT(3 downto 0), sdecod6);
 DEC_HEX4: decod7seg port map(TEMPO, sdecod4);
-DEC_HEX2: decod7seg port map(("00" & SEL(3 downto 2)), sdecod2);
-DEC_HEX0: decod7seg port map(("00" & SEL(1 downto 0)), sdecod0);
+DEC_HEX2: decod7seg port map(edec2, sdecod2);
+DEC_HEX0: decod7seg port map(edec0, sdecod0);
 
 --d_code
 DCODE_HEX7: d_code port map(CODE(31 downto 28), sdec7);
@@ -306,14 +306,14 @@ DCODE_HEX1: d_code port map(CODE(7 downto 4), sdec1);
 DCODE_HEX0: d_code port map(CODE(3 downto 0), sdec0);
 
 --mux_2x1_7bits
-MUX_HEX7: mux_2x1_7bits port map(sdec7, sdecod7, E5, smuxhex7);
-MUX_HEX6: mux_2x1_7bits port map(sdec6, sdecod6, E5, smuxhex6);
-MUX_HEX5: mux_2x1_7bits port map(sdec5, T_display, E3, smuxhex5);
-MUX_HEX4: mux_2x1_7bits port map(sdec4, sdecod4, E3, smuxhex4);
-MUX_HEX3: mux_2x1_7bits port map(sdec3, C_display, E1, smuxhex3);
-MUX_HEX2: mux_2x1_7bits port map(sdec2, sdecod2, E1, smuxhex2);
-MUX_HEX1: mux_2x1_7bits port map(sdec1, L_display, E1, smuxhex1);
-MUX_HEX0: mux_2x1_7bits port map(sdec0, sdecod0, E1, smuxhex0);
+MUX_HEX7: mux_2x1_7bits port map(E5, sdec7, sdecod7, smuxhex7);
+MUX_HEX6: mux_2x1_7bits port map(E5, sdec6, sdecod6,  smuxhex6);
+MUX_HEX5: mux_2x1_7bits port map(E3, sdec5, T_display, smuxhex5);
+MUX_HEX4: mux_2x1_7bits port map(E3, sdec4, sdecod4, smuxhex4);
+MUX_HEX3: mux_2x1_7bits port map(E1, sdec3, C_display, smuxhex3);
+MUX_HEX2: mux_2x1_7bits port map(E1, sdec2, sdecod2, smuxhex2);
+MUX_HEX1: mux_2x1_7bits port map(E1, sdec1, L_display, smuxhex1);
+MUX_HEX0: mux_2x1_7bits port map(E1, sdec0, sdecod0, smuxhex0);
 
 --mux_2x1_16bits
 MUX_LEDR: mux_2x1_16bits port map(stermobonus, andtermo, SW(17), smuxled);
@@ -376,13 +376,19 @@ ROM_3a: ROM3a port map(X, srom3a);
 andtermo <= stermoround and not(E1);
 
 --Para o mux_2x1_7bits HEX5
-T_display <= "0000111" -- t
+T_display <= "0000111"; -- t
 
 --Para o mux_2x1_7bits HEX3
-C_display <= "1000110" -- C
+C_display <= "1000110"; -- C
 
 --Para o mux_2x1_7bits HEX1
-L_display <= "1000111" -- L
+L_display <= "1000111"; -- L
+
+--Para o decod HEX2
+edec2 <= ("00" & SEL(3 downto 2));
+
+--Para o decod HEX0
+edec0 <= ("00" & SEL(1 downto 0));
 
 --Para as portas NOR
 E23 <= E2 nor E3;
@@ -400,3 +406,5 @@ HEX1 <= E12 or smuxhex1;
 HEX0 <= E12 or smuxhex0;
 
 end arc;
+
+
