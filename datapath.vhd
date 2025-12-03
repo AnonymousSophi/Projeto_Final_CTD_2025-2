@@ -9,7 +9,7 @@ port(
 	SW: in std_logic_vector(17 downto 0);
 	
 	-- Entradas de controle
-	R1, R2, E1, E2, E3, E4, E5: in std_logic; -- R2 = E1
+	R1, R2, E1, E2, E3, E4, E5: in std_logic;
 	
 	-- Saídas de dados
 	hex0, hex1, hex2, hex3, hex4, hex5, hex6, hex7: out std_logic_vector(6 downto 0);
@@ -24,35 +24,44 @@ architecture arc of datapath is
 ---------------------------SIGNALS-----------------------------------------------------------
 --contadores
 signal TEMPO, X, LOAD: std_logic_vector(3 downto 0);
+
 --FSM_clock
 signal CLK_1Hz, CLK_050Hz, CLK_033Hz, CLK_025Hz, CLK_020Hz: std_logic;
+
 --Logica combinacional
 signal RESULT: std_logic_vector(7 downto 0);
+
 --Registradores
 signal SEL: std_logic_vector(3 downto 0);
 signal USER: std_logic_vector(14 downto 0);
 signal Bonus, Bonus_reg: std_logic_vector(3 downto 0);
+
 --ROMs
 signal CODE_aux: std_logic_vector(14 downto 0);
 signal CODE: std_logic_vector(31 downto 0);
+
 --COMP
 signal erro: std_logic_vector(14 downto 0);
 signal erro_numerico : std_logic_vector(3 downto 0);
+
 --NOR enables displays
 signal E23, E25, E12: std_logic;
 
 --signals implícitos--
-signal T_display, L_display, C_display: std_logic_vector(7 downto 0);
+signal T_display, L_display, C_display: std_logic_vector(6 downto 0);
 
 --dec termometrico
 signal stermoround, stermobonus, andtermo, smuxled: std_logic_vector(15 downto 0);
+
 --decoders HEX 7-0
 signal sdecod7, sdec7, sdecod6, sdec6, sdecod5, sdec5, sdecod4, sdec4, sdecod3, sdec3, sdecod2, sdec2, sdecod1, sdec1, sdecod0, sdec0: std_logic_vector(6 downto 0);
 signal smuxhex7, smuxhex6, smuxhex5, smuxhex4, smuxhex3, smuxhex2, smuxhex1, smuxhex0: std_logic_vector(6 downto 0);
 signal edec2, edec0: std_logic_vector(3 downto 0);
+
 --saida ROMs
 signal srom0, srom1, srom2, srom3: std_logic_vector(31 downto 0);
 signal srom0a, srom1a, srom2a, srom3a: std_logic_vector(14 downto 0);
+
 --FSM_clock
 signal E2orE3: std_logic;
 
@@ -132,8 +141,7 @@ end component;
 component mux_4x1_1bit is
 port(E0, E1, E2, E3: in std_logic;
 	sel: in std_logic_vector(1 downto 0);
-	saida: out std_logic
-);
+	saida: out std_logic);
 end component;
 
 component mux_4x1_15bits is
@@ -305,14 +313,14 @@ DCODE_HEX1: d_code port map(CODE(7 downto 4), sdec1);
 DCODE_HEX0: d_code port map(CODE(3 downto 0), sdec0);
 
 --mux_2x1_7bits
-MUX_HEX7: mux_2x1_7bits port map(E5, sdec7, sdecod7, smuxhex7);
-MUX_HEX6: mux_2x1_7bits port map(E5, sdec6, sdecod6,  smuxhex6);
-MUX_HEX5: mux_2x1_7bits port map(E3, sdec5, T_display, smuxhex5);
-MUX_HEX4: mux_2x1_7bits port map(E3, sdec4, sdecod4, smuxhex4);
-MUX_HEX3: mux_2x1_7bits port map(E1, sdec3, C_display, smuxhex3);
-MUX_HEX2: mux_2x1_7bits port map(E1, sdec2, sdecod2, smuxhex2);
-MUX_HEX1: mux_2x1_7bits port map(E1, sdec1, L_display, smuxhex1);
-MUX_HEX0: mux_2x1_7bits port map(E1, sdec0, sdecod0, smuxhex0);
+MUX_HEX7: mux_2x1_7bits port map(sdec7, sdecod7, E5, smuxhex7);
+MUX_HEX6: mux_2x1_7bits port map(sdec6, sdecod6, E5, smuxhex6);
+MUX_HEX5: mux_2x1_7bits port map(sdec5, T_display, E3, smuxhex5);
+MUX_HEX4: mux_2x1_7bits port map(sdec4, sdecod4, E3, smuxhex4);
+MUX_HEX3: mux_2x1_7bits port map(sdec3, C_display, E1, smuxhex3);
+MUX_HEX2: mux_2x1_7bits port map(sdec2, sdecod2, E1, smuxhex2);
+MUX_HEX1: mux_2x1_7bits port map(sdec1, L_display, E1, smuxhex1);
+MUX_HEX0: mux_2x1_7bits port map(sdec0, sdecod0, E1, smuxhex0);
 
 --mux_2x1_16bits
 MUX_LEDR: mux_2x1_16bits port map(stermobonus, andtermo, SW(17), smuxled);
@@ -321,17 +329,17 @@ MUX_LEDR: mux_2x1_16bits port map(stermobonus, andtermo, SW(17), smuxled);
 MUX_FSM_CLK: mux_4x1_1bit port map(CLK_050Hz, CLK_033Hz, CLK_025Hz, CLK_020Hz, SEL(1 downto 0), end_FPGA);
 
 --mux_4x1_15bits
-MUX_ROMaux: mux_4x1_15bits port map(SEL(3 downto 2), srom0a, srom1a, srom2a, srom3a, CODE);
+MUX_ROMaux: mux_4x1_15bits port map(SEL(3 downto 2), srom0a, srom1a, srom2a, srom3a, CODE_aux);
 
 --mux_4x1_32bits
-MUX_ROM: mux_4x1_32bits port map(SEL(3 downto 2), srom0, srom1, srom2, srom3, CODE_aux);
+MUX_ROM: mux_4x1_32bits port map(SEL(3 downto 2), srom0, srom1, srom2, srom3, CODE);
 
 --reg_4bits
 REG_BONUS: reg_4bits port map(CLK_050Hz, R2, E4, Bonus, Bonus_reg);
 REG_SEL: reg_4bits port map(CLK_050Hz, R2, E1, SW(3 downto 0), SEL);
 
 --reg_15bits
-REG_USER: reg_15bits port map(CLK_050Hz, R2, E3, USER);
+REG_USER: reg_15bits port map(CLK_050Hz, R2, E3, SW(14 downto 0), USER);
 
 --COMP_n_erros
 COMP_ERRO: COMP_n_erros port map(CODE_aux, USER, erro);
@@ -340,7 +348,10 @@ COMP_ERRO: COMP_n_erros port map(CODE_aux, USER, erro);
 COMP_END: COMP_0 port map(Bonus_reg, end_game);
 
 --subtracao
-SUB0: subtracao port map(Bonus_reg, erro);
+SUB0: subtracao port map(Bonus_reg, erro_numerico, Bonus);
+
+--somador bit a bit
+BSUM: bit_sum port map(erro, erro_numerico);
 
 --logica_comb
 LOGICA0: logica_comb port map(X, Bonus_reg, SEL(1 downto 0), RESULT);
@@ -372,7 +383,10 @@ ROM_3a: ROM3a port map(X, srom3a);
 ---------------------ATRIBUICOES DIRETAS---------------------
 
 --Para o mux_2x1_16bits
-andtermo <= stermoround and not(E1);
+andtermo <= stermoround when E1 = '0' else (others => '0'); 
+--andtermo <= stermoround and (others => not E1);   -- Outro jeito se n der certo
+-- andtermo <= stermoround and not(E1); -- IDEIA ORIGINAL (porta AND entre um VETOR e um ESCALAR)
+
 
 --Para o mux_2x1_7bits HEX5
 T_display <= "0000111"; -- t
@@ -394,16 +408,32 @@ E23 <= E2 nor E3;
 E25 <= E2 nor E5;
 E12 <= E1 nor E2;
 
+--Para o sinal da FSM_Clock
+E2orE3 <= E2 or E3;
+
 --Para os DISPLAYS 
-HEX7 <= E25 or smuxhex7;
-HEX6 <= E25 or smuxhex6;
-HEX5 <= E23 or smuxhex5;
-HEX4 <= E23 or smuxhex4;
-HEX3 <= E12 or smuxhex3;
-HEX2 <= E12 or smuxhex2;
-HEX1 <= E12 or smuxhex1;
-HEX0 <= E12 or smuxhex0;
+
+HEX7 <= smuxhex7 when E25 = '0' else (others => '1');   -- Declaração para teste (igual portas NOR)
+HEX6 <= smuxhex6 when E25 = '0' else (others => '1');
+HEX5 <= smuxhex5 when E23 = '0' else (others => '1');
+HEX4 <= smuxhex4 when E23 = '0' else (others => '1');
+HEX3 <= smuxhex3 when E12 = '0' else (others => '1');
+HEX2 <= smuxhex2 when E12 = '0' else (others => '1');
+HEX1 <= smuxhex1 when E12 = '0' else (others => '1');
+HEX0 <= smuxhex0 when E12 = '0' else (others => '1');
+
+-- Não existe OR entre escalar e vetor :(
+--HEX7 <= E25 or smuxhex7;
+--HEX6 <= E25 or smuxhex6;
+--HEX5 <= E23 or smuxhex5;
+--HEX4 <= E23 or smuxhex4;
+--HEX3 <= E12 or smuxhex3;
+--HEX2 <= E12 or smuxhex2;
+--HEX1 <= E12 or smuxhex1;
+--HEX0 <= E12 or smuxhex0;
+
+--Para LEDR
+ledr <= smuxled;
+
 
 end arc;
-
-
