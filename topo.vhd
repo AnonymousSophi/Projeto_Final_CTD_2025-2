@@ -47,6 +47,8 @@ end component;
 
 begin
 
+clock <= CLK_500Hz; -- 500 Hz clock
+
 -- PORT MAPS
 
 DATA0: datapath port map(clock, SW(17 downto 0), R1, R2, E1, E2, E3, E4, E5, HEX0, HEX1, HEX2, HEX3, HEX4, HEX5, HEX6, HEX7, 
@@ -59,5 +61,4 @@ CTRL0: controle port map(clock, KEY(0), KEY(1), end_time, end_round, end_game, e
 
 
 end circuito;
-
 
