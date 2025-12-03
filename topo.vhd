@@ -8,7 +8,7 @@ port(CLOCK_50: in std_logic;
 	SW: in std_logic_vector(17 downto 0);
 	HEX0, HEX1, HEX2, HEX3, HEX4, HEX5, HEX6, HEX7: out std_logic_vector(6 downto 0);
 	LEDR: out std_logic_vector(15 downto 0)
-);	
+); 
 end topo;
 
 architecture circuito of topo is
