@@ -4,31 +4,62 @@ use ieee.numeric_std.all;
 
 entity ROM2 is
 port(
-	address: in std_logic_vector(3 downto 0);
-	output : out std_logic_vector(31 downto 0)
+	  address: in std_logic_vector(3 downto 0);
+	  output : out std_logic_vector(31 downto 0)
 );
 end ROM2;
 
 architecture arc_ROM2 of ROM2 is
 begin
 
---         switches 0 a 14
---         EDCBA9876543210                 round
-output <= "000110000000001" when address = "0000" else -- BA0
-		  "100001000000100" when address = "0001" else -- E92
-		  "100000010001000" when address = "0010" else -- E73
-		  "010000000000110" when address = "0011" else -- D21
-		  "000100000010010" when address = "0100" else -- B41
-		  "000011000000100" when address = "0101" else -- A92
-		  "000110000000010" when address = "0110" else -- BA1
-		  "100000001001000" when address = "0111" else -- E63
-		  "000010000001001" when address = "1000" else -- A30
-		  "010000000110000" when address = "1001" else -- D54
-		  "000011000000001" when address = "1010" else -- A90
-		  "100000010000100" when address = "1011" else -- E82
-		  "010000010000010" when address = "1100" else -- D81
-		  "100000010000001" when address = "1101" else -- E80
-		  "111000000000000" when address = "1110" else -- EDC
-		  "000100000011000"; -- B43
+--         HEX7      HEX6     HEX5     HEX4     HEX3     HEX2     HEX1     HEX0               round
 
+output <= "1010"	& "1111" & "0000" & "1111"	& "0111" & "1111" & "0100" & "1111" when address = "0000" else
+--          A        des       0       des       7       des       4       des
+
+          "1111"	& "0010" & "1111" & "1011"	& "1111" & "1000" & "1111" & "0110" when address = "0001" else
+--         des        2       des       B       des       8       des       6
+
+			 "0011"	& "1111" & "1111" & "1001"	& "0001" & "1111" & "1111" & "1111" when address = "0010" else
+--          3        des      des       9        1       des      des      des
+
+			 "1111"	& "1111" & "0101" & "1111"	& "1111" & "0000" & "1111" & "1100" when address = "0011" else
+--         des       des       5       des      des       0       des        C
+
+			 "1000"	& "1111" & "1111" & "1111"	& "0010" & "1111" & "1001" & "1111" when address = "0100" else
+--          8        des      des      des       2       des       9       des
+
+			 "1111"	& "0100" & "1111" & "0001"	& "1111" & "1111" & "1101" & "1111" when address = "0101" else
+--         des        4       des       1       des      des        D      des
+
+			 "0000"	& "1111" & "0111" & "1111"	& "1111" & "1111" & "1111" & "0101" when address = "0110" else
+--          0        des       7       des      des      des      des        5			 
+			 
+			 "1111"	& "1111" & "0010" & "1111"	& "0110" & "1111" & "1111" & "1111" when address = "0111" else
+--         des       des       2       des       6       des      des      des
+
+			 "1001"	& "1111" & "1111" & "0011"	& "1111" & "1110" & "1111" & "1111" when address = "1000" else
+--          9        des      des       3       des        E      des      des
+
+			 "1111"	& "0110" & "1111" & "1111"	& "0100" & "1111" & "1111" & "0001" when address = "1001" else
+--         des        6       des      des       4       des      des        1
+
+			 "0010"	& "1111" & "1111" & "1111"	& "1111" & "0111" & "1111" & "1000" when address = "1010" else
+--          2        des      des      des      des       7       des        8
+
+			 "1111"	& "1011" & "1111" & "0000"	& "1111" & "1111" & "1111" & "1111" when address = "1011" else
+--         des        B       des       0       des      des      des      des
+
+			 "0100"	& "1111" & "1111" & "1110"	& "0011" & "1111" & "1111" & "1111" when address = "1100" else
+--          4        des      des        E       3       des      des      des
+
+			 "1111"	& "1111" & "1000" & "1111"	& "1111" & "0101" & "1111" & "0000" when address = "1101" else
+--         des       des       8       des      des        5      des        0
+
+			 "0111"	& "1111" & "1111" & "1111"	& "1011" & "1111" & "0001" & "1111" when address = "1110" else
+--          7        des      des      des        B      des        1      des
+
+			 "1111"	& "0000" & "1111" & "0010"	& "1111" & "1111" & "0110" & "1111";
+--         des        0       des       2       des      des        6      des
+			 
 end arc_ROM2;
